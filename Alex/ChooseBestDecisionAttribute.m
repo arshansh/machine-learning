@@ -7,16 +7,12 @@ n = sum(binary_targets==0);
    for i=1:numel(attributes)
                   
         indices = (examples(:,attributes{i}) == 1); 
-        pos=0; 
-        pos = sum(binary_targets(indices)); 
-        p1 = pos/numel(indices); 
-        n1 = 1-p1; 
+        p1 = sum(binary_targets(indices)); 
+        n1 = numel(indices) - p1;
         
         indices = examples(:,attributes{i}) == 0; 
-        pos=0;
-        pos = sum(binary_targets(indices)); 
-        p0 = pos/numel(indices); 
-        n0 = 1-p0; 
+        p0 = sum(binary_targets(indices)); 
+        n0 = numel(indices)-p0; 
         
        Remainder = (p0+n0)*Inp(p0,n0)/(p+n)+(p1+n1)*Inp(p1,n1)/(p+n); 
        Gain = Inp(n,p) - Remainder; 
