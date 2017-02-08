@@ -1,4 +1,4 @@
-function [tree] = decision_tree(ex,att,bin_targ)
+function tree = decision_tree(ex,att,bin_targ)
 %DECISION_TREE Summary of this function goes here
 %   Detailed explanation goes here
 

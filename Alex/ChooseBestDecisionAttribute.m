@@ -8,13 +8,16 @@ n = sum(binary_targets==0);
                   
         indices = (examples(:,attributes{i}) == 1); 
         p1 = sum(binary_targets(indices)); 
-        n1 = numel(indices) - p1;
+        n1 = length(indices) - p1;
         
         indices = examples(:,attributes{i}) == 0; 
         p0 = sum(binary_targets(indices)); 
-        n0 = numel(indices)-p0; 
+        n0 = length(indices)-p0; 
+       
+        p0n0 = (p0+n0)/length(binary_targets);
+        p1n1 = (p1+n1)/length(binary_targets);
         
-       Remainder = (p0+n0)*Inp(p0,n0)/(p+n)+(p1+n1)*Inp(p1,n1)/(p+n); 
+       Remainder = p0n0*Inp(p0,n0)+p1n1*Inp(p1,n1)/(p+n); 
        Gain = Inp(n,p) - Remainder; 
        if ~exist('previous_gain','var')
            previous_gain=Gain; 
@@ -36,7 +39,10 @@ end
 
 function Irk = Inp(n,p)
 
- Irk = - p*log2(p/(p+n))/(p+n) - n*log2(n/(p+n))/(p+n); 
+ppn = p/(p+n);
+npn = n/(p+n);
+
+ Irk = -( ppn*log2(ppn) + npn*log2(npn) );
 
 
 end 
