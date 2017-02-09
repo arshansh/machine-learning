@@ -1,8 +1,8 @@
-clear all 
+%clear all 
 
-load('noisydata_students.mat');
+%load('noisydata_students.mat');
 
-pruning_example(x,y); 
+%pruning_example(x,y); 
 
 
 
@@ -32,10 +32,10 @@ for i=1:10
     train_y(1+(i-1)*100:i*100)=[]; 
     
     for j=1:6
-        y_emotion(j,:) = (train_y==j); 
-        trees(j,:) = decision_tree(train_x,attributes,y_emotion(j,:));
+        y_emotion(:,j) = (train_y==j); 
+        trees(:,j) = decision_tree(train_x,attributes,y_emotion(:,j));
     end 
-    
+    %%%%%%
     predictions(:,:,i) = testTrees(trees,test_x); 
     
     notwrong(i) = 0; 
@@ -67,9 +67,9 @@ end
 
 
 
-load('noisydata_students.mat');
-figure
-pruning_example(x,y); 
+%load('noisydata_students.mat');
+%figure
+%pruning_example(x,y); 
 
 
 
