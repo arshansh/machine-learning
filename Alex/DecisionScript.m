@@ -19,6 +19,9 @@ end
 
 
 confused = zeros(6,6,10);
+notwrong = zeros(10,1); 
+wrong = zeros(10,1); 
+predictions = zeros(100,6,10); 
 
 for i=1:10
     
@@ -38,16 +41,33 @@ for i=1:10
     
     predictions(:,:,i) = testTrees(trees,test_x); 
     
-    notwrong(i) = 0; 
-    wrong(i) = 0;
+
+    prob = zeros(1,6); 
+    
     for l=1:length(test_y)
-        
-        if (all(predictions(l,:,i)==0)) 
-            predictions(l,1+round(rand(1)*5),i)=1;     
+     
+        if (~any(predictions(l,:,i))) 
+%              predictions(l,1+round(rand*5),i)=1;   %even probability
+          for j=1:6
+         prob(j) = sum(y_emotion(j,:))/length(y_emotion(j,:)); 
+          end
+          dist_rand = sum(rand >= cumsum([0, prob]));
+         predictions(l,dist_rand,i)=1;   % probability given by the training data
+
         elseif (length(find(predictions(l,:,i)==1))>1)
+            
             indices = find(predictions(l,:,i)==1); 
-            split=round(1+rand(size(indices)-1));            
-            indices(split) =[];           
+            
+            total = 0; 
+            for m=1:length(indices)
+                total = total + sum(y_emotion(m,:)); 
+            end
+            for m=1:length(indices)
+            prob2(m) = sum(y_emotion(m,:))/total; 
+            end
+%             split=round(1+rand(size(indices)-1));  %even prob    
+            split = sum(rand >= cumsum([0, prob2])); 
+            indices(split) = [];         
             predictions(l,indices,i) = 0; 
         end 
             
