@@ -17,7 +17,7 @@ n = sum(binary_targets==0);
         p0n0 = (p0+n0)/(p+n);
         p1n1 = (p1+n1)/(p+n);
         
-       Remainder = p0n0*Inp(p0,n0)+p1n1*Inp(p1,n1)/((p+n)); 
+       Remainder = p0n0*Inp(p0,n0)+p1n1*Inp(p1,n1); 
        Gain = Inp(n,p) - Remainder; 
        if ~exist('previous_gain','var')
            previous_gain=Gain; 
@@ -42,7 +42,7 @@ function Irk = Inp(n,p)
 ppn = p/(p+n);
 npn = n/(p+n);
 
- Irk = -( ppn*log2(ppn)/((p+n)) + npn*log2(npn) );
+ Irk = -( ppn*log2(ppn) + npn*log2(npn) );
 
 
 end 

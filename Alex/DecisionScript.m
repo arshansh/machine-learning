@@ -26,7 +26,7 @@ predictions = zeros(100,6,10);
 for i=1:10
     
     test_x = x(1+(i-1)*100:i*100,:); 
-    test_y = y(1+(i-1)*100:i*100); 
+    test_y(:,i) = y(1+(i-1)*100:i*100); 
     
     train_x = x;
     train_x(1+(i-1)*100:i*100,:)=[]; 
@@ -44,15 +44,15 @@ for i=1:10
 
     prob = zeros(1,6); 
     
-    for l=1:length(test_y)
+    for l=1:length(test_y(:,i))
      
         if (~any(predictions(l,:,i))) 
-%              predictions(l,1+round(rand*5),i)=1;   %even probability
-          for j=1:6
-         prob(j) = sum(y_emotion(j,:))/length(y_emotion(j,:)); 
-          end
-          dist_rand = sum(rand >= cumsum([0, prob]));
-         predictions(l,dist_rand,i)=1;   % probability given by the training data
+             predictions(l,1+round(rand*5),i)=1;   %even probability
+%           for j=1:6
+%          prob(j) = sum(y_emotion(j,:))/length(y_emotion(j,:)); 
+%           end
+%           dist_rand = sum(rand >= cumsum([0, prob]));
+%          predictions(l,dist_rand,i)=1;   % probability given by the training data
 
         elseif (length(find(predictions(l,:,i)==1))>1)
             
@@ -65,19 +65,19 @@ for i=1:10
             for m=1:length(indices)
             prob2(m) = sum(y_emotion(m,:))/total; 
             end
-%             split=round(1+rand(size(indices)-1));  %even prob    
-            split = sum(rand >= cumsum([0, prob2])); 
+            split=round(1+rand(size(indices)-1));  %even prob    
+%             split = sum(rand >= cumsum([0, prob2])); 
             indices(split) = [];         
             predictions(l,indices,i) = 0; 
         end 
             
-        if(predictions(l,test_y(l),i))
+        if(predictions(l,test_y(l,i),i))
             notwrong(i) = notwrong(i) +1; 
-            confused(test_y(l),test_y(l),i) = confused(test_y(l),test_y(l)) +1; 
+            confused(test_y(l,i),test_y(l,i),i) = confused(test_y(l,i),test_y(l,i)) +1; 
             
         else
             wrong(i) = wrong(i) +1; 
-            confused(test_y(l),find(predictions(l,:,i)==1),i) = confused(test_y(l),find(predictions(l,:,i)==1),i)+1;  
+            confused(find(predictions(l,:,i)==1),test_y(l,i),i) = confused(find(predictions(l,:,i)==1),test_y(l,i),i)+1;  
         end 
         
     end 
@@ -85,11 +85,34 @@ for i=1:10
      
 end 
 
+A=zeros(6,6);
+for i = 1:10 
+    A = A + confused(:,:,i); 
+end 
 
+for j= 1:6
+    
+    Rc(j)= A(j,j)/(sum(A(j,:)));
+    Pr(j)= A(j,j)/(sum(A(:,j)));
+    F1(j)=2*(Pr(j)*Rc(j))/(Pr(j)+Rc(j)); 
+    
+end 
 
-load('noisydata_students.mat');
-figure
-pruning_example(x,y); 
-
-
+targets = zeros(1000,6);
+for i=1:10
+    
+    
+    for j = 1:100
+    output(j+(i-1)*100,:) = predictions(j,:,i)==1; 
+    targets(j+(i-1)*100,test_y(j,i)) = 1; 
+    
+    end
+end 
+ plotconfusion(transpose(targets),transpose(output)); 
+ figure
+ plotroc(transpose(targets),transpose(output)); 
+%  
+% load('noisydata_students.mat');
+% figure
+% pruning_example(x,y); 
 
